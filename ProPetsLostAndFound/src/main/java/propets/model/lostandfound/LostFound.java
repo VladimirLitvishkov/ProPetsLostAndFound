@@ -5,10 +5,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import org.springframework.data.annotation.Id;
+
+//import javax.persistence.ElementCollection;
+//import javax.persistence.Entity;
+//import javax.persistence.GeneratedValue;
+//import javax.persistence.Id;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -25,24 +27,26 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-@Entity
+//@Entity
 @EqualsAndHashCode(of = "id")
 
 public class LostFound implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+//	@Id
+//	@GeneratedValue
+//	Long id;
 	@Id
-	@GeneratedValue
-	Long id;
+	String id;
 
 	Boolean typePost;
 
 	String type;
 	Location location;
-	@ElementCollection
+//	@ElementCollection
 	List<String> photos;
-	@ElementCollection
+//	@ElementCollection
 	Set<String> tags;
 	String author;
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

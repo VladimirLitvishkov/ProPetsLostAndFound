@@ -21,7 +21,8 @@ import propets.model.lostandfound.Location;
 @EqualsAndHashCode(of = { "id" })
 public class LostFoundResponseDto {
 
-	Long id;
+//	Long id;
+	String id;
 
 	Boolean typePost;
 
