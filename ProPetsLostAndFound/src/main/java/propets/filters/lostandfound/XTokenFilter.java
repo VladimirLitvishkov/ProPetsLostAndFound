@@ -78,7 +78,7 @@ public class XTokenFilter implements Filter {
 	}
 
 	private boolean checkPointCut(String path, String method) {
-		boolean check = path.startsWith("/h2");
+		boolean check = path.startsWith("/h2") || "Options".equalsIgnoreCase(method);
 		return check;
 	}
 	
