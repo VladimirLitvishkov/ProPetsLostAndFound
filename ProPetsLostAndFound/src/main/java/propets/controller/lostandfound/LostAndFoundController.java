@@ -20,7 +20,7 @@ import propets.dto.lostandfound.LostFoundRequestDto;
 import propets.dto.lostandfound.LostFoundResponseDto;
 import propets.service.lostandfound.LostAndFoundService;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*", exposedHeaders = "X-token")
 @RestController
 @RequestMapping("/{lang}/v1")
 public class LostAndFoundController {
