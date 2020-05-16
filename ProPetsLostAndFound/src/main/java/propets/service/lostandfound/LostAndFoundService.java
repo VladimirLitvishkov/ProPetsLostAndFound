@@ -23,7 +23,5 @@ public interface LostAndFoundService {
 	LostFoundResponseDto deleteLostFound(Long id);
 	
 	Set<String> tagsAndColorsOfPicture(String imageUrl, String language);
-	
-	Set<LostFoundResponseDto> searchForMatches(LostFoundResponseDto post);
 
 }

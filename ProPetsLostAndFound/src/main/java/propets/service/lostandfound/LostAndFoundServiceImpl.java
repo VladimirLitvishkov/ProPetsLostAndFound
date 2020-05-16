@@ -118,10 +118,4 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
 		return tags;
 	}
 
-	@Override
-	public Set<LostFoundResponseDto> searchForMatches(LostFoundResponseDto post) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

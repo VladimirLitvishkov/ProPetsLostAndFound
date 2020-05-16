@@ -36,7 +36,6 @@ public class XTokenFilter implements Filter {
 		String path = request.getServletPath();
 		String method = request.getMethod();
 		String xToken = request.getHeader("X-token");
-//		String url = "http://localhost:8888/account/en/v1/check";
 		String url = "https://pro-pets-router.herokuapp.com/account/en/v1/check";
 		
 		if (!checkPointCut(path, method)) {
@@ -78,7 +77,7 @@ public class XTokenFilter implements Filter {
 	}
 
 	private boolean checkPointCut(String path, String method) {
-		boolean check = path.startsWith("/h2") || "Options".equalsIgnoreCase(method);
+		boolean check = "Options".equalsIgnoreCase(method);
 		return check;
 	}
 	
