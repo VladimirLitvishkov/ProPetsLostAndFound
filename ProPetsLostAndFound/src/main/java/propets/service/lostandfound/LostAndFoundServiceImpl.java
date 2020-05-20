@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import propets.configuration.lostandfound.LostAndFoundConfiguration;
 import propets.dao.lostandfound.LostAndFoundRepository;
 import propets.dto.lostandfound.LostFoundRequestDto;
 import propets.dto.lostandfound.LostFoundResponseDto;
@@ -28,6 +29,9 @@ import propets.model.lostandfound.LostFound;
 @Service
 public class LostAndFoundServiceImpl implements LostAndFoundService {
 	
+	@Autowired
+	LostAndFoundConfiguration configuration;
+
 	@Autowired
 	LostAndFoundRepository lostFoundRepository;
 
@@ -50,7 +54,8 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
 	public Page<LostFoundResponseDto> lostFoundPets(int page, int size, boolean lostFound) {
 		Pageable pageable = PageRequest.of(page, size, Direction.DESC, "id");
 		List<LostFound> list = lostFoundRepository.findByTypePost(lostFound, pageable);
-		Page<LostFoundResponseDto> listResponse = new PageImpl<LostFoundResponseDto>(list.stream().map(this::buildResponseDto).collect(Collectors.toList()));
+		Page<LostFoundResponseDto> listResponse = new PageImpl<LostFoundResponseDto>(
+				list.stream().map(this::buildResponseDto).collect(Collectors.toList()));
 		return listResponse;
 	}
 
@@ -97,9 +102,12 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
 	@Override
 	public Set<String> tagsAndColorsOfPicture(String imageUrl, String language) {
 		//TODO
-		String auth = "Basic YWNjXzIxM2M0ZTU1Y2U5MjJiOTo0NTJlYThhYzU5ZmNkZGViNjQxZTZjOGFkOWNhNDljNA==";
-		String urlTags = "https://api.imagga.com/v2/tags";
-		String urlColors = "https://api.imagga.com/v2/colors";
+//		String auth = "Basic YWNjXzIxM2M0ZTU1Y2U5MjJiOTo0NTJlYThhYzU5ZmNkZGViNjQxZTZjOGFkOWNhNDljNA==";
+//		String urlTags = "https://api.imagga.com/v2/tags";
+//		String urlColors = "https://api.imagga.com/v2/colors";
+		String auth = configuration.getAuthorizationImagga();
+		String urlTags = configuration.getRequestTags();
+		String urlColors = configuration.getRequestColors();
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", auth);

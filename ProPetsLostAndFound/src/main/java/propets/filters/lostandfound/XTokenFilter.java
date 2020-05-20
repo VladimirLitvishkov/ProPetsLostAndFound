@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -24,9 +25,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import propets.configuration.lostandfound.LostAndFoundConfiguration;
+
 @Service
 @Order(10)
 public class XTokenFilter implements Filter {
+	
+	@Autowired
+	LostAndFoundConfiguration configuration;
 	
 
 	@Override
@@ -36,7 +42,8 @@ public class XTokenFilter implements Filter {
 		String path = request.getServletPath();
 		String method = request.getMethod();
 		String xToken = request.getHeader("X-token");
-		String url = "https://pro-pets-router.herokuapp.com/account/en/v1/check";
+//		String url = "https://pro-pets-router.herokuapp.com/account/en/v1/check";
+		String url = configuration.getRequestToken();
 		
 		if (!checkPointCut(path, method)) {
 			if (xToken == null) {
