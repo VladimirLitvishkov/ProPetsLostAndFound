@@ -21,20 +21,21 @@ import propets.model.lostandfound.Location;
 @EqualsAndHashCode(of = { "id" })
 public class LostFoundResponseDto {
 
-//	Long id;
 	String id;
 
 	Boolean typePost;
 
 	String type;
-
+	String breed;
+	String sex;
 	Location location;
 	@Singular("photos")
 	List<String> photos;
 	@Singular("tags")
 	Set<String> tags;
-
-	String author;
+	String userLogin;
+	String userName;
+	String avatar;
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	LocalDateTime datePost;
 

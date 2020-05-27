@@ -28,7 +28,7 @@ import propets.model.lostandfound.LostFound;
 
 @Service
 public class LostAndFoundServiceImpl implements LostAndFoundService {
-	
+
 	@Autowired
 	LostAndFoundConfiguration configuration;
 
@@ -37,17 +37,20 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
 
 	@Override
 	public String newLostFoundPet(LostFoundRequestDto lostFoundRequestDto, String author, boolean lostFound) {
-		LostFound model = LostFound.builder().type(lostFoundRequestDto.getType()).typePost(lostFound).author(author)
+		LostFound model = LostFound.builder().type(lostFoundRequestDto.getType()).typePost(lostFound).userLogin(author)
+				.userName(lostFoundRequestDto.getUserName()).avatar(lostFoundRequestDto.getAvatar())
 				.location(lostFoundRequestDto.getLocation()).photos(lostFoundRequestDto.getPhotos())
+				.breed(lostFoundRequestDto.getBreed()).sex(lostFoundRequestDto.getSex())
 				.tags(lostFoundRequestDto.getTags()).build();
 		lostFoundRepository.save(model);
 		return "buildResponseDto(model)";
 	}
 
 	private LostFoundResponseDto buildResponseDto(LostFound model) {
-		return LostFoundResponseDto.builder().id(model.getId()).author(model.getAuthor()).datePost(model.getDatePost())
+		return LostFoundResponseDto.builder().id(model.getId()).userLogin(model.getUserLogin())
+				.userName(model.getUserName()).avatar(model.getAvatar()).datePost(model.getDatePost())
 				.type(model.getType()).typePost(model.getTypePost()).tags(model.getTags()).photos(model.getPhotos())
-				.location(model.getLocation()).build();
+				.breed(model.getBreed()).sex(model.getSex()).location(model.getLocation()).build();
 	}
 
 	@Override
@@ -87,6 +90,12 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
 		if (lostFoundRequestDto.getTags() != null && !lostFoundRequestDto.getTags().isEmpty()) {
 			model.setTags(lostFoundRequestDto.getTags());
 		}
+		if (lostFoundRequestDto.getBreed() != null && !lostFoundRequestDto.getBreed().isEmpty()) {
+			model.setBreed(lostFoundRequestDto.getBreed());
+		}
+		if (lostFoundRequestDto.getSex() != null && !lostFoundRequestDto.getSex().isEmpty()) {
+			model.setSex(lostFoundRequestDto.getSex());
+		}
 		lostFoundRepository.save(model);
 		return "buildResponseDto(model)";
 	}
@@ -101,7 +110,7 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
 
 	@Override
 	public Set<String> tagsAndColorsOfPicture(String imageUrl, String language) {
-		//TODO
+		// TODO
 //		String auth = "Basic YWNjXzIxM2M0ZTU1Y2U5MjJiOTo0NTJlYThhYzU5ZmNkZGViNjQxZTZjOGFkOWNhNDljNA==";
 //		String urlTags = "https://api.imagga.com/v2/tags";
 //		String urlColors = "https://api.imagga.com/v2/colors";
@@ -113,12 +122,13 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
 		headers.add("Authorization", auth);
 		UriComponentsBuilder builderTags = UriComponentsBuilder.fromHttpUrl(urlTags).queryParam("image_url", imageUrl)
 				.queryParam("language", language).queryParam("threshold", 50);
-		RequestEntity<String> request = new RequestEntity<>(headers, HttpMethod.GET,builderTags.build().toUri());
+		RequestEntity<String> request = new RequestEntity<>(headers, HttpMethod.GET, builderTags.build().toUri());
 		ResponseEntity<ResponseDto> responseTags = restTemplate.exchange(request, ResponseDto.class);
-		Set<String> tags = responseTags.getBody().getResult().getTags().stream()
-				.map(t -> t.getTag().get(language)).collect(Collectors.toSet());
-		UriComponentsBuilder builderColors = UriComponentsBuilder.fromHttpUrl(urlColors).queryParam("image_url", imageUrl);
-		request = new RequestEntity<>(headers, HttpMethod.GET,builderColors.build().toUri());
+		Set<String> tags = responseTags.getBody().getResult().getTags().stream().map(t -> t.getTag().get(language))
+				.collect(Collectors.toSet());
+		UriComponentsBuilder builderColors = UriComponentsBuilder.fromHttpUrl(urlColors).queryParam("image_url",
+				imageUrl);
+		request = new RequestEntity<>(headers, HttpMethod.GET, builderColors.build().toUri());
 		ResponseEntity<ResponseDto> responseColors = restTemplate.exchange(request, ResponseDto.class);
 		Set<String> colors = responseColors.getBody().getResult().getColors().getForeground_colors().stream()
 				.map(imgC -> imgC.getHtml_code()).collect(Collectors.toSet());

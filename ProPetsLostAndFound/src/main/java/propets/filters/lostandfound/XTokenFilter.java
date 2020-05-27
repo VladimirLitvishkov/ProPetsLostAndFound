@@ -30,37 +30,37 @@ import propets.configuration.lostandfound.LostAndFoundConfiguration;
 @Service
 @Order(10)
 public class XTokenFilter implements Filter {
-	
+
 	@Autowired
 	LostAndFoundConfiguration configuration;
-	
 
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
-			throws IOException, ServletException {HttpServletRequest request = (HttpServletRequest) req;
+			throws IOException, ServletException {
+		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
 		String path = request.getServletPath();
 		String method = request.getMethod();
 		String xToken = request.getHeader("X-token");
 //		String url = "https://pro-pets-router.herokuapp.com/account/en/v1/check";
 		String url = configuration.getRequestToken();
-		
+
 		if (!checkPointCut(path, method)) {
 			if (xToken == null) {
 				response.sendError(401);
 				return;
 			}
 			RestTemplate restTemplate = new RestTemplate();
-			URI urlAccServ = null;
+			URI urlCheckTokenServ = null;
 			try {
-				urlAccServ = new URI(url);
+				urlCheckTokenServ = new URI(url);
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("X-token", xToken);
-			RequestEntity<String> requestAccServ = new RequestEntity<>(headers, HttpMethod.GET, urlAccServ);
-			ResponseEntity<String> responseAccServ/* = restTemplate.exchange(requestAccServ, String.class) */;
+			RequestEntity<String> requestAccServ = new RequestEntity<>(headers, HttpMethod.GET, urlCheckTokenServ);
+			ResponseEntity<String> responseAccServ;
 			try {
 				responseAccServ = restTemplate.exchange(requestAccServ, String.class);
 			} catch (RestClientException e) {
@@ -71,23 +71,46 @@ public class XTokenFilter implements Filter {
 				response.sendError(409);
 				return;
 			}
+			if (checkForCreatPost(path, method)) {
+				String userId = path.substring(path.lastIndexOf("/") + 1);
+				if (!userId.equalsIgnoreCase(responseAccServ.getHeaders().getFirst("X-userId"))) {
+					response.sendError(409, "creat");
+					return;
+				}
+			}
+			if (checkForPutDelPost(path, method)) {
+				String userId = request.getHeader("X-Username");
+				if (!userId.equalsIgnoreCase(responseAccServ.getHeaders().getFirst("X-userId"))) {
+					response.sendError(409, "del/put");
+					return;
+				}
+			}
 			response.addHeader("X-token", responseAccServ.getHeaders().getFirst("X-token"));
 			response.addHeader("X-userId", responseAccServ.getHeaders().getFirst("X-userId"));
-			response.addHeader("X-userName", responseAccServ.getHeaders().getFirst("X-userName"));
-			response.addHeader("X-avatar", responseAccServ.getHeaders().getFirst("X-avatar"));
 			chain.doFilter(new WrapperRequest(request, responseAccServ.getHeaders().getFirst("X-userId")), response);
 			return;
-			
+
 		}
 		chain.doFilter(request, response);
 
+	}
+
+	private boolean checkForPutDelPost(String path, String method) {
+		boolean check = path.matches(".+/v1/\\w+")
+				&& (method.equalsIgnoreCase("Put") || method.equalsIgnoreCase("Delete"));
+		return check;
+	}
+
+	private boolean checkForCreatPost(String path, String method) {
+		boolean check = path.matches(".+/v1/\\w+") && method.equalsIgnoreCase("Post");
+		return check;
 	}
 
 	private boolean checkPointCut(String path, String method) {
 		boolean check = "Options".equalsIgnoreCase(method);
 		return check;
 	}
-	
+
 	private class WrapperRequest extends HttpServletRequestWrapper {
 		String user;
 
@@ -95,10 +118,11 @@ public class XTokenFilter implements Filter {
 			super(request);
 			this.user = user;
 		}
+
 		@Override
 		public Principal getUserPrincipal() {
 			return new Principal() { // () -> user;
-				
+
 				@Override
 				public String getName() {
 					return user;

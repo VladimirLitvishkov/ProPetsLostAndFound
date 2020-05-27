@@ -11,10 +11,18 @@ public class LostFoundRequestDto {
 	
 	String type;
 	
+	String breed;
+	
+	String sex;
+	
 	Location location;
 	
 	List<String> photos;
 	
 	Set<String> tags;
+	
+	String userName;
+	
+	String avatar;
 
 }

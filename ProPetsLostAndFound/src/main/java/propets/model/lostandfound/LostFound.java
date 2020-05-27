@@ -27,28 +27,26 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-//@Entity
 @EqualsAndHashCode(of = "id")
 
 public class LostFound implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-//	@Id
-//	@GeneratedValue
-//	Long id;
 	@Id
 	String id;
 
 	Boolean typePost;
 
 	String type;
+	String breed;
+	String sex;
 	Location location;
-//	@ElementCollection
 	List<String> photos;
-//	@ElementCollection
 	Set<String> tags;
-	String author;
+	String userLogin;
+	String userName;
+	String avatar;
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@Default
 	LocalDateTime datePost = LocalDateTime.now();
