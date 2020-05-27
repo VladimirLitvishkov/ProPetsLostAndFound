@@ -1,6 +1,5 @@
 package propets.controller.lostandfound;
 
-import java.security.Principal;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +27,16 @@ public class LostAndFoundController {
 	@Autowired
 	LostAndFoundService lostAndFoundService;
 
-	@PostMapping("/lost")
-	public String newLostPet(@RequestBody LostFoundRequestDto lostFoundRequestDto, Principal author) {
-		return lostAndFoundService.newLostFoundPet(lostFoundRequestDto, author.getName(), false);
+	@PostMapping("/lost/{login:.*}")
+	public String newLostPet(@RequestBody LostFoundRequestDto lostFoundRequestDto,
+			@PathVariable("login") String author) {
+		return lostAndFoundService.newLostFoundPet(lostFoundRequestDto, author, false);
 	}
 
-	@PostMapping("/find")
-	public String newFoundPet(@RequestBody LostFoundRequestDto lostFoundRequestDto, Principal author) {
-		return lostAndFoundService.newLostFoundPet(lostFoundRequestDto, author.getName(), true);
+	@PostMapping("/find/{login:.*}")
+	public String newFoundPet(@RequestBody LostFoundRequestDto lostFoundRequestDto,
+			@PathVariable("login") String author) {
+		return lostAndFoundService.newLostFoundPet(lostFoundRequestDto, author, true);
 	}
 
 	@GetMapping("/losts")
