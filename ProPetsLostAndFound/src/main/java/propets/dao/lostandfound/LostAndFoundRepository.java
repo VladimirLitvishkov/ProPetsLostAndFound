@@ -14,7 +14,7 @@ import propets.model.lostandfound.LostFound;
 //	
 //}
 
-public interface LostAndFoundRepository extends MongoRepository<LostFound, Long> {
+public interface LostAndFoundRepository extends MongoRepository<LostFound, String> {
 	
 	List<LostFound> findByTypePost(Boolean typePost, Pageable pageable);
 	

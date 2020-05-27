@@ -21,6 +21,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.Singular;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -42,7 +43,9 @@ public class LostFound implements Serializable {
 	String breed;
 	String sex;
 	Location location;
+	@Singular("photos")
 	List<String> photos;
+	@Singular("tags")
 	Set<String> tags;
 	String userLogin;
 	String userName;

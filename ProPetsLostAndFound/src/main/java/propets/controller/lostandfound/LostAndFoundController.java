@@ -50,7 +50,7 @@ public class LostAndFoundController {
 	}
 
 	@GetMapping("/{id}")
-	public LostFoundResponseDto findPostById(@PathVariable long id) {
+	public LostFoundResponseDto findPostById(@PathVariable String id) {
 		return lostAndFoundService.findPostById(id);
 	}
 
@@ -67,18 +67,23 @@ public class LostAndFoundController {
 	}
 
 	@PutMapping("/{id}")
-	public String editLostFound(@RequestBody LostFoundRequestDto lostFoundRequestDto, @PathVariable long id) {
+	public String editLostFound(@RequestBody LostFoundRequestDto lostFoundRequestDto, @PathVariable String id) {
 		return lostAndFoundService.editLostFound(lostFoundRequestDto, id);
 	}
 
 	@DeleteMapping("/{id}")
-	public LostFoundResponseDto deleteLostFound(@PathVariable long id) {
+	public LostFoundResponseDto deleteLostFound(@PathVariable String id) {
 		return lostAndFoundService.deleteLostFound(id);
 	}
 
 	@GetMapping("/tagsandcolors")
 	public Set<String> tagsOfPictureAndColors(@RequestParam String imageUrl, @PathVariable String lang) {
 		return lostAndFoundService.tagsAndColorsOfPicture(imageUrl, lang);
+	}
+	
+	@PostMapping("/posts/allid")
+	public Set<LostFoundResponseDto> findPostsByAllId(@RequestBody Set<String> allId){
+		return lostAndFoundService.findPostsByAllId(allId);
 	}
 
 }

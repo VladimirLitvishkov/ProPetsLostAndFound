@@ -36,7 +36,8 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
 	LostAndFoundRepository lostFoundRepository;
 
 	@Override
-	public LostFoundResponseDto newLostFoundPet(LostFoundRequestDto lostFoundRequestDto, String author, boolean lostFound) {
+	public LostFoundResponseDto newLostFoundPet(LostFoundRequestDto lostFoundRequestDto, String author,
+			boolean lostFound) {
 		LostFound model = LostFound.builder().type(lostFoundRequestDto.getType()).typePost(lostFound).userLogin(author)
 				.userName(lostFoundRequestDto.getUserName()).avatar(lostFoundRequestDto.getAvatar())
 				.location(lostFoundRequestDto.getLocation()).photos(lostFoundRequestDto.getPhotos())
@@ -63,7 +64,7 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
 	}
 
 	@Override
-	public LostFoundResponseDto findPostById(long id) {
+	public LostFoundResponseDto findPostById(String id) {
 		LostFound model = lostFoundRepository.findById(id).orElseThrow(() -> new LostFoundIdNotFoundException());
 		return buildResponseDto(model);
 	}
@@ -76,7 +77,7 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
 	}
 
 	@Override
-	public String editLostFound(LostFoundRequestDto lostFoundRequestDto, long id) {
+	public String editLostFound(LostFoundRequestDto lostFoundRequestDto, String id) {
 		LostFound model = lostFoundRepository.findById(id).orElseThrow(() -> new LostFoundIdNotFoundException());
 		if (lostFoundRequestDto.getType() != null && !lostFoundRequestDto.getType().isEmpty()) {
 			model.setType(lostFoundRequestDto.getType());
@@ -101,7 +102,7 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
 	}
 
 	@Override
-	public LostFoundResponseDto deleteLostFound(Long id) {
+	public LostFoundResponseDto deleteLostFound(String id) {
 		LostFound model = lostFoundRepository.findById(id).orElseThrow(() -> new LostFoundIdNotFoundException());
 		LostFoundResponseDto response = buildResponseDto(model);
 		lostFoundRepository.deleteById(id);
@@ -134,6 +135,14 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
 				.map(imgC -> imgC.getHtml_code()).collect(Collectors.toSet());
 		tags.addAll(colors);
 		return tags;
+	}
+
+	@Override
+	public Set<LostFoundResponseDto> findPostsByAllId(Set<String> allId) {
+		return allId.stream()
+				.map((id) -> buildResponseDto(
+						lostFoundRepository.findById(id).orElseThrow(() -> new LostFoundIdNotFoundException())))
+				.collect(Collectors.toSet());
 	}
 
 }
