@@ -9,7 +9,7 @@ import propets.dto.lostandfound.LostFoundResponseDto;
 
 public interface LostAndFoundService {
 
-	String newLostFoundPet(LostFoundRequestDto lostFoundRequestDto, String author, boolean lostFound);
+	LostFoundResponseDto newLostFoundPet(LostFoundRequestDto lostFoundRequestDto, String author, boolean lostFound);
 
 	Page<LostFoundResponseDto> lostFoundPets(int page, int size, boolean lostFound);
 

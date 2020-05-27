@@ -28,13 +28,13 @@ public class LostAndFoundController {
 	LostAndFoundService lostAndFoundService;
 
 	@PostMapping("/lost/{login:.*}")
-	public String newLostPet(@RequestBody LostFoundRequestDto lostFoundRequestDto,
+	public LostFoundResponseDto newLostPet(@RequestBody LostFoundRequestDto lostFoundRequestDto,
 			@PathVariable("login") String author) {
 		return lostAndFoundService.newLostFoundPet(lostFoundRequestDto, author, false);
 	}
 
 	@PostMapping("/find/{login:.*}")
-	public String newFoundPet(@RequestBody LostFoundRequestDto lostFoundRequestDto,
+	public LostFoundResponseDto newFoundPet(@RequestBody LostFoundRequestDto lostFoundRequestDto,
 			@PathVariable("login") String author) {
 		return lostAndFoundService.newLostFoundPet(lostFoundRequestDto, author, true);
 	}

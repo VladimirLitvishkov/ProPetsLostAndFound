@@ -36,14 +36,14 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
 	LostAndFoundRepository lostFoundRepository;
 
 	@Override
-	public String newLostFoundPet(LostFoundRequestDto lostFoundRequestDto, String author, boolean lostFound) {
+	public LostFoundResponseDto newLostFoundPet(LostFoundRequestDto lostFoundRequestDto, String author, boolean lostFound) {
 		LostFound model = LostFound.builder().type(lostFoundRequestDto.getType()).typePost(lostFound).userLogin(author)
 				.userName(lostFoundRequestDto.getUserName()).avatar(lostFoundRequestDto.getAvatar())
 				.location(lostFoundRequestDto.getLocation()).photos(lostFoundRequestDto.getPhotos())
 				.breed(lostFoundRequestDto.getBreed()).sex(lostFoundRequestDto.getSex())
 				.tags(lostFoundRequestDto.getTags()).build();
 		lostFoundRepository.save(model);
-		return "buildResponseDto(model)";
+		return buildResponseDto(model);
 	}
 
 	private LostFoundResponseDto buildResponseDto(LostFound model) {
