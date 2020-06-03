@@ -86,9 +86,9 @@ public class XTokenFilter implements Filter {
 				}
 			}
 			response.addHeader("X-token", responseAccServ.getHeaders().getFirst("X-token"));
-			response.addHeader("X-userId", responseAccServ.getHeaders().getFirst("X-userId"));
-			chain.doFilter(new WrapperRequest(request, responseAccServ.getHeaders().getFirst("X-userId")), response);
-			return;
+//			response.addHeader("X-userId", responseAccServ.getHeaders().getFirst("X-userId"));
+//			chain.doFilter(new WrapperRequest(request, responseAccServ.getHeaders().getFirst("X-userId")), response);
+//			return;
 
 		}
 		chain.doFilter(request, response);
@@ -111,24 +111,24 @@ public class XTokenFilter implements Filter {
 		return check;
 	}
 
-	private class WrapperRequest extends HttpServletRequestWrapper {
-		String user;
-
-		public WrapperRequest(HttpServletRequest request, String user) {
-			super(request);
-			this.user = user;
-		}
-
-		@Override
-		public Principal getUserPrincipal() {
-			return new Principal() { // () -> user;
-
-				@Override
-				public String getName() {
-					return user;
-				}
-			};
-		}
-	}
+//	private class WrapperRequest extends HttpServletRequestWrapper {
+//		String user;
+//
+//		public WrapperRequest(HttpServletRequest request, String user) {
+//			super(request);
+//			this.user = user;
+//		}
+//
+//		@Override
+//		public Principal getUserPrincipal() {
+//			return new Principal() { // () -> user;
+//
+//				@Override
+//				public String getName() {
+//					return user;
+//				}
+//			};
+//		}
+//	}
 
 }

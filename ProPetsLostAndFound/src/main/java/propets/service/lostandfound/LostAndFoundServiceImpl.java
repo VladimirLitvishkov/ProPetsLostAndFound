@@ -137,12 +137,12 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
 		return tags;
 	}
 
-	@Override
-	public Set<LostFoundResponseDto> findPostsByAllId(Set<String> allId) {
-		return allId.stream()
-				.map((id) -> buildResponseDto(
-						lostFoundRepository.findById(id).orElseThrow(() -> new LostFoundIdNotFoundException())))
-				.collect(Collectors.toSet());
-	}
+//	@Override
+//	public Set<LostFoundResponseDto> findPostsByAllId(Set<String> allId) {
+//		return allId.stream()
+//				.map((id) -> buildResponseDto(
+//						lostFoundRepository.findById(id).orElseThrow(() -> new LostFoundIdNotFoundException())))
+//				.collect(Collectors.toSet());
+//	}
 
 }

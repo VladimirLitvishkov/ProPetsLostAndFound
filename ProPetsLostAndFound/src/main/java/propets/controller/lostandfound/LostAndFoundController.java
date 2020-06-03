@@ -81,9 +81,9 @@ public class LostAndFoundController {
 		return lostAndFoundService.tagsAndColorsOfPicture(imageUrl, lang);
 	}
 	
-	@PostMapping("/posts/allid")
-	public Set<LostFoundResponseDto> findPostsByAllId(@RequestBody Set<String> allId){
-		return lostAndFoundService.findPostsByAllId(allId);
-	}
+//	@PostMapping("/posts/allid")
+//	public Set<LostFoundResponseDto> findPostsByAllId(@RequestBody Set<String> allId){
+//		return lostAndFoundService.findPostsByAllId(allId);
+//	}
 
 }

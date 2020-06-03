@@ -24,6 +24,6 @@ public interface LostAndFoundService {
 	
 	Set<String> tagsAndColorsOfPicture(String imageUrl, String language);
 	
-	Set<LostFoundResponseDto> findPostsByAllId(Set<String> allId);
+//	Set<LostFoundResponseDto> findPostsByAllId(Set<String> allId);
 
 }
