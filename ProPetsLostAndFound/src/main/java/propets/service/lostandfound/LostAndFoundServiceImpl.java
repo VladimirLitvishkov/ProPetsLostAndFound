@@ -130,7 +130,7 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
 		RestTemplate restTemplate = new RestTemplate();
 		URI urlDeleteInElastic = null;
 		try {
-			urlDeleteInElastic = new URI(configuration.getUrlDeleteInElastic());
+			urlDeleteInElastic = new URI(configuration.getUrlDeleteInElastic()+id);
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
