@@ -42,7 +42,8 @@ public class LostFound implements Serializable {
 	String type;
 	String breed;
 	String sex;
-	Location location;
+	Address address;
+	Coordinates coordinates;
 	@Singular("photos")
 	List<String> photos;
 	@Singular("tags")

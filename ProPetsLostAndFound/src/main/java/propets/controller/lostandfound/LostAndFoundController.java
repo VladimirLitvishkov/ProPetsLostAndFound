@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import propets.configuration.lostandfound.LostAndFoundConfiguration;
 import propets.dto.lostandfound.LostFoundRequestDto;
 import propets.dto.lostandfound.LostFoundResponseDto;
+import propets.dto.lostandfound.SearchByInfoRequestDto;
 import propets.service.lostandfound.LostAndFoundService;
 
 @CrossOrigin(origins = "*", exposedHeaders = "X-token")
@@ -26,6 +28,9 @@ public class LostAndFoundController {
 
 	@Autowired
 	LostAndFoundService lostAndFoundService;
+
+	@Autowired
+	LostAndFoundConfiguration configuration;
 
 	@PostMapping("/lost/{login:.*}")
 	public LostFoundResponseDto newLostPet(@RequestBody LostFoundRequestDto lostFoundRequestDto,
@@ -40,13 +45,13 @@ public class LostAndFoundController {
 	}
 
 	@GetMapping("/losts")
-	public Page<LostFoundResponseDto> lostPets(@RequestParam int page, @RequestParam int size) {
-		return lostAndFoundService.lostFoundPets(page, size, false);
+	public Page<LostFoundResponseDto> lostPets(@RequestParam int page, int size) {
+		return lostAndFoundService.lostFoundPets(page, configuration.getPageSize(), false);
 	}
 
 	@GetMapping("/finds")
-	public Page<LostFoundResponseDto> foundPets(@RequestParam int page, @RequestParam int size) {
-		return lostAndFoundService.lostFoundPets(page, size, true);
+	public Page<LostFoundResponseDto> foundPets(@RequestParam int page, int size) {
+		return lostAndFoundService.lostFoundPets(page, configuration.getPageSize(), true);
 	}
 
 	@GetMapping("/{id}")
@@ -55,19 +60,21 @@ public class LostAndFoundController {
 	}
 
 	@PostMapping("/lost/filter")
-	public Set<LostFoundResponseDto> searchByInfoLostPets(@RequestBody LostFoundRequestDto lostFoundRequestDto,
-			@RequestParam int radius, @RequestParam int page, @RequestParam int size) {
-		return lostAndFoundService.searchByInfoLostFoundPets(lostFoundRequestDto, false, radius, page, size);
+	public Page<LostFoundResponseDto> searchByInfoLostPets(@RequestBody SearchByInfoRequestDto searchRequestDto,
+			@RequestParam int page) {
+		return lostAndFoundService.searchByInfoLostFoundPets(searchRequestDto, false, configuration.getRadius(), page,
+				configuration.getPageSize());
 	}
 
 	@PostMapping("/find/filter")
-	public Set<LostFoundResponseDto> searchByInfoFoundPets(@RequestBody LostFoundRequestDto lostFoundRequestDto,
-			@RequestParam int radius, @RequestParam int page, @RequestParam int size) {
-		return lostAndFoundService.searchByInfoLostFoundPets(lostFoundRequestDto, true, radius, page, size);
+	public Page<LostFoundResponseDto> searchByInfoFoundPets(@RequestBody SearchByInfoRequestDto searchRequestDto,
+			@RequestParam int page) {
+		return lostAndFoundService.searchByInfoLostFoundPets(searchRequestDto, true, configuration.getRadius(), page,
+				configuration.getPageSize());
 	}
 
 	@PutMapping("/{id}")
-	public String editLostFound(@RequestBody LostFoundRequestDto lostFoundRequestDto, @PathVariable String id) {
+	public LostFoundResponseDto editLostFound(@RequestBody LostFoundRequestDto lostFoundRequestDto, @PathVariable String id) {
 		return lostAndFoundService.editLostFound(lostFoundRequestDto, id);
 	}
 
@@ -80,7 +87,7 @@ public class LostAndFoundController {
 	public Set<String> tagsOfPictureAndColors(@RequestParam String imageUrl, @PathVariable String lang) {
 		return lostAndFoundService.tagsAndColorsOfPicture(imageUrl, lang);
 	}
-	
+
 //	@PostMapping("/posts/allid")
 //	public Set<LostFoundResponseDto> findPostsByAllId(@RequestBody Set<String> allId){
 //		return lostAndFoundService.findPostsByAllId(allId);

@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 @Builder
-@EqualsAndHashCode
-public class Location implements Serializable {
+@EqualsAndHashCode(of = "coordinates")
+public class Address implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -26,9 +26,5 @@ public class Location implements Serializable {
 	String street;
 
 	Integer building;
-
-	Double latitude;
-
-	Double longitude;
 
 }

@@ -1,10 +1,14 @@
 package propets.service.lostandfound;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +18,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -23,10 +29,12 @@ import propets.dao.lostandfound.LostAndFoundRepository;
 import propets.dto.lostandfound.LostFoundRequestDto;
 import propets.dto.lostandfound.LostFoundResponseDto;
 import propets.dto.lostandfound.ResponseDto;
+import propets.dto.lostandfound.SearchByInfoRequestDto;
 import propets.exceptions.lostandfound.LostFoundIdNotFoundException;
 import propets.model.lostandfound.LostFound;
 
 @Service
+@EnableBinding(Source.class)
 public class LostAndFoundServiceImpl implements LostAndFoundService {
 
 	@Autowired
@@ -35,23 +43,29 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
 	@Autowired
 	LostAndFoundRepository lostFoundRepository;
 
+	@Autowired
+	MessageChannel output;
+
 	@Override
 	public LostFoundResponseDto newLostFoundPet(LostFoundRequestDto lostFoundRequestDto, String author,
 			boolean lostFound) {
 		LostFound model = LostFound.builder().type(lostFoundRequestDto.getType()).typePost(lostFound).userLogin(author)
 				.userName(lostFoundRequestDto.getUserName()).avatar(lostFoundRequestDto.getAvatar())
-				.location(lostFoundRequestDto.getLocation()).photos(lostFoundRequestDto.getPhotos())
-				.breed(lostFoundRequestDto.getBreed()).sex(lostFoundRequestDto.getSex())
-				.tags(lostFoundRequestDto.getTags()).build();
+				.address(lostFoundRequestDto.getAddress()).coordinates(lostFoundRequestDto.getCoordinates())
+				.photos(lostFoundRequestDto.getPhotos()).breed(lostFoundRequestDto.getBreed())
+				.sex(lostFoundRequestDto.getSex()).tags(lostFoundRequestDto.getTags()).build();
 		lostFoundRepository.save(model);
-		return buildResponseDto(model);
+		LostFoundResponseDto result = buildResponseDto(model);
+		output.send(MessageBuilder.withPayload(result).build());
+		return result;
 	}
 
 	private LostFoundResponseDto buildResponseDto(LostFound model) {
 		return LostFoundResponseDto.builder().id(model.getId()).userLogin(model.getUserLogin())
 				.userName(model.getUserName()).avatar(model.getAvatar()).datePost(model.getDatePost())
 				.type(model.getType()).typePost(model.getTypePost()).tags(model.getTags()).photos(model.getPhotos())
-				.breed(model.getBreed()).sex(model.getSex()).location(model.getLocation()).build();
+				.breed(model.getBreed()).sex(model.getSex()).address(model.getAddress())
+				.coordinates(model.getCoordinates()).build();
 	}
 
 	@Override
@@ -70,20 +84,25 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
 	}
 
 	@Override
-	public Set<LostFoundResponseDto> searchByInfoLostFoundPets(LostFoundRequestDto lostFoundRequestDto,
+	public Page<LostFoundResponseDto> searchByInfoLostFoundPets(SearchByInfoRequestDto searchRequestDto,
 			boolean lostFound, int radius, int page, int size) {
 		// TODO Auto-generated method stub
+		Pageable pageable = PageRequest.of(page, size, Direction.DESC, "id");
+
 		return null;
 	}
 
 	@Override
-	public String editLostFound(LostFoundRequestDto lostFoundRequestDto, String id) {
+	public LostFoundResponseDto editLostFound(LostFoundRequestDto lostFoundRequestDto, String id) {
 		LostFound model = lostFoundRepository.findById(id).orElseThrow(() -> new LostFoundIdNotFoundException());
 		if (lostFoundRequestDto.getType() != null && !lostFoundRequestDto.getType().isEmpty()) {
 			model.setType(lostFoundRequestDto.getType());
 		}
-		if (lostFoundRequestDto.getLocation() != null) {
-			model.setLocation(lostFoundRequestDto.getLocation());
+		if (lostFoundRequestDto.getAddress() != null) {
+			model.setAddress(lostFoundRequestDto.getAddress());
+		}
+		if (lostFoundRequestDto.getCoordinates() != null) {
+			model.setCoordinates(lostFoundRequestDto.getCoordinates());
 		}
 		if (lostFoundRequestDto.getPhotos() != null && !lostFoundRequestDto.getPhotos().isEmpty()) {
 			model.setPhotos(lostFoundRequestDto.getPhotos());
@@ -98,7 +117,9 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
 			model.setSex(lostFoundRequestDto.getSex());
 		}
 		lostFoundRepository.save(model);
-		return "buildResponseDto(model)";
+		LostFoundResponseDto result = buildResponseDto(model);
+		output.send(MessageBuilder.withPayload(result).build());
+		return result;
 	}
 
 	@Override
@@ -106,6 +127,16 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
 		LostFound model = lostFoundRepository.findById(id).orElseThrow(() -> new LostFoundIdNotFoundException());
 		LostFoundResponseDto response = buildResponseDto(model);
 		lostFoundRepository.deleteById(id);
+		RestTemplate restTemplate = new RestTemplate();
+		URI urlDeleteInElastic = null;
+		try {
+			urlDeleteInElastic = new URI(configuration.getUrlDeleteInElastic());
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		RequestEntity<LostFoundResponseDto> request = new RequestEntity<LostFoundResponseDto>(response,
+				HttpMethod.DELETE, urlDeleteInElastic);
+		restTemplate.exchange(request, String.class);
 		return response;
 	}
 

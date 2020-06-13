@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 
 import propets.dto.lostandfound.LostFoundRequestDto;
 import propets.dto.lostandfound.LostFoundResponseDto;
+import propets.dto.lostandfound.SearchByInfoRequestDto;
 
 public interface LostAndFoundService {
 
@@ -15,10 +16,10 @@ public interface LostAndFoundService {
 
 	LostFoundResponseDto findPostById(String id);
 
-	Set<LostFoundResponseDto> searchByInfoLostFoundPets(LostFoundRequestDto lostFoundRequestDto, boolean lostFound,
+	Page<LostFoundResponseDto> searchByInfoLostFoundPets(SearchByInfoRequestDto searchRequestDto, boolean lostFound,
 			int radius, int page, int size);
 
-	String editLostFound(LostFoundRequestDto lostFoundRequestDto, String id);
+	LostFoundResponseDto editLostFound(LostFoundRequestDto lostFoundRequestDto, String id);
 
 	LostFoundResponseDto deleteLostFound(String id);
 	

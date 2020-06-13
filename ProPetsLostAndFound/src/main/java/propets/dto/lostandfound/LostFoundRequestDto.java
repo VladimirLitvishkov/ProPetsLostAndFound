@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Set;
 
 import lombok.Getter;
-import propets.model.lostandfound.Location;
+import propets.model.lostandfound.Address;
+import propets.model.lostandfound.Coordinates;
 
 @Getter
 public class LostFoundRequestDto {
@@ -15,7 +16,9 @@ public class LostFoundRequestDto {
 	
 	String sex;
 	
-	Location location;
+	Address address;
+	
+	Coordinates coordinates;
 	
 	List<String> photos;
 	

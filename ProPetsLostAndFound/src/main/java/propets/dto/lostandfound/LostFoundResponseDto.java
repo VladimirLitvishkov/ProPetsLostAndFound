@@ -12,7 +12,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
-import propets.model.lostandfound.Location;
+import propets.model.lostandfound.Address;
+import propets.model.lostandfound.Coordinates;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,7 +29,8 @@ public class LostFoundResponseDto {
 	String type;
 	String breed;
 	String sex;
-	Location location;
+	Address address;
+	Coordinates coordinates;
 	@Singular("photos")
 	List<String> photos;
 	@Singular("tags")

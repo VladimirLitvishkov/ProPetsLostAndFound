@@ -24,5 +24,14 @@ public class LostAndFoundConfiguration {
 
 	@Value("${requestToken}")
 	String requestToken;
+	
+	@Value("${radius}")
+	Integer radius;
+	
+	@Value("${pageSize}")
+	Integer pageSize;
+	
+	@Value("${urlDeleteInElastic}")
+	String urlDeleteInElastic;
 
 }
