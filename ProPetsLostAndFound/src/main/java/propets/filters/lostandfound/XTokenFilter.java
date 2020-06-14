@@ -3,7 +3,6 @@ package propets.filters.lostandfound;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.Principal;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -11,7 +10,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +24,8 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import propets.configuration.lostandfound.LostAndFoundConfiguration;
+import propets.dao.lostandfound.LostAndFoundRepository;
+import propets.exceptions.lostandfound.LostFoundIdNotFoundException;
 
 @Service
 @Order(10)
@@ -33,6 +33,9 @@ public class XTokenFilter implements Filter {
 
 	@Autowired
 	LostAndFoundConfiguration configuration;
+	
+	@Autowired
+	LostAndFoundRepository repository;
 
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
@@ -79,7 +82,15 @@ public class XTokenFilter implements Filter {
 				}
 			}
 			if (checkForPutDelPost(path, method)) {
-				String userId = request.getHeader("X-Username");
+				String postID = path.substring(path.lastIndexOf("/") + 1);
+				String userId = null;
+				try {
+					userId = repository.findById(postID).orElseThrow(() -> new LostFoundIdNotFoundException()).getUserLogin();
+				} catch (LostFoundIdNotFoundException e) {
+					e.printStackTrace();
+					response.sendError(409);
+					return;
+				}
 				if (!userId.equalsIgnoreCase(responseAccServ.getHeaders().getFirst("X-userId"))) {
 					response.sendError(409, "del/put");
 					return;
