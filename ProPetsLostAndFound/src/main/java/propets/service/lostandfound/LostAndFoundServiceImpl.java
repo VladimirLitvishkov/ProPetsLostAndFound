@@ -134,8 +134,7 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
-		RequestEntity<LostFoundResponseDto> request = new RequestEntity<LostFoundResponseDto>(response,
-				HttpMethod.DELETE, urlDeleteInElastic);
+		RequestEntity<String> request = new RequestEntity<>(HttpMethod.DELETE, urlDeleteInElastic);
 		restTemplate.exchange(request, String.class);
 		return response;
 	}
