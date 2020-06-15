@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 public class Coordinates {
 	
-	Double latitude;
+	Double lat;
 
-	Double longitude;
+	Double lon;
 
 
 }
