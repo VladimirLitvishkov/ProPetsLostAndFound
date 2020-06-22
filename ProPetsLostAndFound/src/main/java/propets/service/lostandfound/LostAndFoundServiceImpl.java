@@ -57,6 +57,19 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
 		lostFoundRepository.save(model);
 		LostFoundResponseDto result = buildResponseDto(model);
 		output.send(MessageBuilder.withPayload(result).build());
+//		need Kafka
+		RestTemplate restTemplate = new RestTemplate();
+		String addActivityURL = configuration.getUrlAccounting() + result.getUserLogin()+"/activity/"+result.getId();
+		URI addActivityURI = null;
+		try {
+			addActivityURI = new URI(addActivityURL);
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("X-nameService", configuration.getApplicationName());
+		RequestEntity<String> addActivityRequest = new RequestEntity<>(headers, HttpMethod.POST, addActivityURI);
+		restTemplate.exchange(addActivityRequest, String.class);
 		return result;
 	}
 
@@ -116,6 +129,12 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
 		if (lostFoundRequestDto.getSex() != null && !lostFoundRequestDto.getSex().isEmpty()) {
 			model.setSex(lostFoundRequestDto.getSex());
 		}
+		if (lostFoundRequestDto.getUserName() != null && !lostFoundRequestDto.getUserName().isEmpty()) {
+			model.setUserName(lostFoundRequestDto.getUserName());
+		}
+		if (lostFoundRequestDto.getAvatar() != null && !lostFoundRequestDto.getAvatar().isEmpty()) {
+			model.setAvatar(lostFoundRequestDto.getAvatar());
+		}
 		lostFoundRepository.save(model);
 		LostFoundResponseDto result = buildResponseDto(model);
 		output.send(MessageBuilder.withPayload(result).build());
@@ -127,6 +146,7 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
 		LostFound model = lostFoundRepository.findById(id).orElseThrow(() -> new LostFoundIdNotFoundException());
 		LostFoundResponseDto response = buildResponseDto(model);
 		lostFoundRepository.deleteById(id);
+//		need Kafka
 		RestTemplate restTemplate = new RestTemplate();
 		URI urlDeleteInElastic = null;
 		try {
@@ -136,6 +156,30 @@ public class LostAndFoundServiceImpl implements LostAndFoundService {
 		}
 		RequestEntity<String> request = new RequestEntity<>(HttpMethod.DELETE, urlDeleteInElastic);
 		restTemplate.exchange(request, String.class);
+//		need Kafka
+		String delActivityURL = configuration.getUrlAccounting() + response.getUserLogin()+"/activity/"+id;
+		URI delActivityURI = null;
+		try {
+			delActivityURI = new URI(delActivityURL);
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		HttpHeaders headersA = new HttpHeaders();
+		headersA.add("X-nameService", configuration.getApplicationName());
+		RequestEntity<String> delActivityRequest = new RequestEntity<>(headersA, HttpMethod.DELETE, delActivityURI);
+		restTemplate.exchange(delActivityRequest, String.class);
+//		need Kafka
+		String delFavoriteURL = configuration.getUrlAccounting() + response.getUserLogin()+"/favorite/"+id;
+		URI delFavoriteURI = null;
+		try {
+			delFavoriteURI = new URI(delFavoriteURL);
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		HttpHeaders headersF = new HttpHeaders();
+		headersF.add("X-nameService", configuration.getApplicationName());
+		RequestEntity<String> delFavoriteRequest = new RequestEntity<>(headersF, HttpMethod.DELETE, delFavoriteURI);
+		restTemplate.exchange(delFavoriteRequest, String.class);
 		return response;
 	}
 

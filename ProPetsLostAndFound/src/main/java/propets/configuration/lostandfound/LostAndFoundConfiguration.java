@@ -33,5 +33,11 @@ public class LostAndFoundConfiguration {
 	
 	@Value("${urlDeleteInElastic}")
 	String urlDeleteInElastic;
+	
+	@Value("${urlAccounting}")
+	String urlAccounting;
+	
+	@Value("${spring.application.name}")
+	String applicationName;
 
 }
